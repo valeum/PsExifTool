@@ -26,8 +26,7 @@ function Install-ExifTool {
     # If no download URL is specified, attempt to retrieve the latest URL from the ExifTool RSS feed.
     if(-not ($DownloadUrl)) {
         Write-Output "Get newest ExifTool download url."
-        [xml]$Rss = Invoke-WebRequest -Uri 'https://exiftool.org/rss.xml' -UseBasicParsing
-        $DownloadUrl = ($Rss.rss.channel.item.enclosure | Where-Object {$_.type -eq 'application/zip'} | Select-Object -First 1).url
+        $DownloadUrl = $DownloadUrl = (([xml](Invoke-WebRequest -Uri 'https://exiftool.org/rss.xml' -UseBasicParsing)).rss.channel.item.enclosure | Where-Object type -eq 'application/zip' | Select-Object -First 1).url
     }
 
     # Download ExifTool ZIP file.
