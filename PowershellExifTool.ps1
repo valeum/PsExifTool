@@ -3,7 +3,7 @@ function Get-ExifData {
     param (
         [Parameter(Mandatory=$true)]
         [string]$File,
-        [string]$ExifTool = '.\exiftool.exe'
+        [string]$ExifToolBinary = '.\exiftool.exe'
     )
 
     Begin {
@@ -11,14 +11,14 @@ function Get-ExifData {
             Write-Error -Message "The specified file '$File' does not exist or is not accessible." -ErrorAction Stop
         }
 
-        if(-not (Test-Path $ExifTool)) {
+        if(-not (Test-Path $ExifToolBinary)) {
             Write-Error -Message "The specified exiftool binary '$ExifToolBin' does not exist or is not accessible." -ErrorAction Stop
         }
     }
 
     Process {
         $ProcessStartInfo = New-Object -TypeName System.Diagnostics.ProcessStartInfo
-        $ProcessStartInfo.FileName = $ExifTool
+        $ProcessStartInfo.FileName = $ExifToolBinary
         $ProcessStartInfo.Arguments = "$File -json"
         $ProcessStartInfo.RedirectStandardOutput = $true
         $ProcessStartInfo.RedirectStandardError = $true
