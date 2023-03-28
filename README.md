@@ -1,2 +1,2 @@
 # PowershellExifTool
-Call the exiftool.exe with parameters, take the output, parse Json and return a PSObject.
+A function that uses ExifTool to output the meta-data of images and videos as PSObjects.
