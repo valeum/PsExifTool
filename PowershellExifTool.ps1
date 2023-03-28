@@ -7,6 +7,10 @@ function Get-ExifData {
     )
 
     Begin {
+        if (-not ($PSVersionTable.PSVersion.Major -ge 5)) {
+            Write-Error "This script requires Powershell version 5 or higher to run." -ErrorAction Stop
+        }
+        
         if(-not (Test-Path $File)) {
             Write-Error -Message "The specified file '$File' does not exist or is not accessible." -ErrorAction Stop
         }
