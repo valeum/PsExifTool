@@ -1,24 +1,48 @@
-[String]$ExifToolBin = Join-Path -Path $PSScriptRoot -ChildPath 'exiftool.exe'
+function Get-ExifData {
+    [CmdletBinding()]
+    param (
+        [Parameter(Mandatory=$true)]
+        [string]$File,
+        [string]$ExifTool = '.\exiftool.exe'
+    )
 
-function Get-ExifData($File) {
-    $TempFileOutput = New-TemporaryFile
-    $TempFileError = New-TemporaryFile
+    Begin {
+        if(-not (Test-Path $File)) {
+            Write-Error -Message "The specified file '$File' does not exist or is not accessible." -ErrorAction Stop
+        }
 
-    $ArgumentList = "$File -json"
-    Start-Process -FilePath $ExifToolBin -ArgumentList $ArgumentList -Wait -RedirectStandardOutput $TempFileOutput -RedirectStandardError $TempFileError
-
-    $StandardOutput = Get-Content $TempFileOutput
-    $StandardErrorOutput = Get-Content $TempFileError
-
-    Remove-Item $TempFileOutput -Force
-    Remove-Item $TempFileError -Force 
-
-    if($StandardOutput.Length -eq 0) {
-        Write-Host $StandardErrorOutput
-        break
+        if(-not (Test-Path $ExifTool)) {
+            Write-Error -Message "The specified exiftool binary '$ExifToolBin' does not exist or is not accessible." -ErrorAction Stop
+        }
     }
 
-    $StandardOutput | ConvertFrom-Json
-}
+    Process {
+        $ProcessStartInfo = New-Object -TypeName System.Diagnostics.ProcessStartInfo
+        $ProcessStartInfo.FileName = $ExifTool
+        $ProcessStartInfo.Arguments = "$File -json"
+        $ProcessStartInfo.RedirectStandardOutput = $true
+        $ProcessStartInfo.RedirectStandardError = $true
+        $ProcessStartInfo.UseShellExecute = $false
+        $ProcessStartInfo.CreateNoWindow = $true
 
-Get-ExifData -File 'C:\tmp\exiftools\'
+        $Process = New-Object -TypeName System.Diagnostics.Process
+        $Process.StartInfo = $ProcessStartInfo
+        $Process.Start() | Out-Null
+
+        $StandardOutput = $Process.StandardOutput.ReadToEnd()
+        $StandardErrorOutput = $Process.StandardError.ReadToEnd()
+        $Process.WaitForExit()
+    }
+
+    End {
+        if($Process.ExitCode -ne 0) {
+            if(-not [string]::IsNullOrWhiteSpace($StandardErrorOutput)) {
+                Write-Error -Exception $StandardErrorOutput -ErrorAction Stop
+            }
+            else {
+                Write-Error -Message "An unknown error occurred while executing the exiftool command." -ErrorAction Stop
+            }
+        }
+        $StandardOutput | ConvertFrom-Json
+    }
+}
