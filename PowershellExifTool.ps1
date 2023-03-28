@@ -3,6 +3,7 @@ function Get-ExifData {
     param (
         [Parameter(Mandatory=$true)]
         [string]$File,
+        [Parameter(Mandatory=$false)]
         [string]$ExifToolBinary = '.\exiftool.exe'
     )
 
