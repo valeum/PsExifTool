@@ -49,7 +49,6 @@ function Install-ExifTool {
     Write-Output "ExifTool installed successfully at $ExifToolPath."
 }
 
-
 function Get-ExifData {
     [CmdletBinding()]
     param (
