@@ -8,9 +8,9 @@ function Install-ExifTool {
     )
 
     # The path to the downloaded ExifTool ZIP file.
-    $ZipPath = Join-Path -Path $env:TEMP -ChildPath 'exiftool.zip'
+    [string]$ZipPath = Join-Path -Path $env:TEMP -ChildPath 'exiftool.zip'
     # The path where ExifTool will be installed.
-    $ExifToolPath = Join-Path -Path $InstallPath -ChildPath 'exiftool.exe'
+    [string]$ExifToolPath = Join-Path -Path $InstallPath -ChildPath 'exiftool.exe'
 
     # Check if ExifTool is already installed.
     if (Test-Path $ExifToolPath) {
